@@ -1,0 +1,671 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>About Me</title>
+  <style>
+    .About-Me {
+      --toggle-size: 30px;
+      --container-width: 5em;
+      --container-height: 2em;
+      --container-radius: 6em;
+      --container-light-bg: #3D7EAE;
+      --container-night-bg: #1D1F2C;
+      --circle-container-diameter: 3em;
+      --sun-moon-diameter: 1.5em;
+      --sun-bg: #ECCA2F;
+      --moon-bg: #C4C9D1;
+      --spot-color: #959DB1;
+      --circle-container-offset: calc((var(--circle-container-diameter) - var(--container-height)) / 2 * -1);
+      --stars-color: #fff;
+      --clouds-color: #F3FDFF;
+      --back-clouds-color: #AACADF;
+      --transition: .5s cubic-bezier(0, -0.02, 0.4, 1.25);
+      --circle-transition: .3s cubic-bezier(0, -0.02, 0.35, 1.17);
+    }
+
+    .About-Me, .About-Me *, .About-Me *::before, .About-Me *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-size: var(--toggle-size);
+    }
+
+    .About-Me {
+      position: fixed;
+      top: 10px; /* Adjust as needed */
+      right: 20px; /* Adjust as needed */
+      z-index: 1000; /* Ensure it's above other content */
+    }
+
+    .About-Me__container {
+      width: var(--container-width);
+      height: var(--container-height);
+      background-color: var(--container-light-bg);
+      border-radius: var(--container-radius);
+      overflow: hidden;
+      cursor: pointer;
+      box-shadow: 0em -0.062em 0.062em rgba(0, 0, 0, 0.25), 0em 0.062em 0.125em rgba(255, 255, 255, 0.94);
+      transition: var(--transition);
+      position: relative;
+    }
+
+    .About-Me__container::before {
+      content: "";
+      position: absolute;
+      z-index: 1;
+      inset: 0;
+      box-shadow: 0em 0.05em 0.187em rgba(0, 0, 0, 0.25) inset, 0em 0.05em 0.187em rgba(0, 0, 0, 0.25) inset;
+      border-radius: var(--container-radius)
+    }
+
+    .About-Me__checkbox {
+      display: none;
+    }
+
+    .About-Me__circle-container {
+      width: var(--circle-container-diameter);
+      height: var(--circle-container-diameter);
+      background-color: rgba(255, 255, 255, 0.1);
+      position: absolute;
+      left: var(--circle-container-offset);
+      top: var(--circle-container-offset);
+      border-radius: var(--container-radius);
+      box-shadow: inset 0 0 0 3.375em rgba(255, 255, 255, 0.1), inset 0 0 0 3.375em rgba(255, 255, 255, 0.1), 0 0 0 0.625em rgba(255, 255, 255, 0.1), 0 0 0 1.25em rgba(255, 255, 255, 0.1);
+      display: flex;
+      transition: var(--circle-transition);
+      pointer-events: none;
+    }
+
+    .About-Me__sun-moon-container {
+      pointer-events: auto;
+      position: relative;
+      z-index: 2;
+      width: var(--sun-moon-diameter);
+      height: var(--sun-moon-diameter);
+      margin: auto;
+      border-radius: var(--container-radius);
+      background-color: var(--sun-bg);
+      box-shadow: 0.062em 0.062em 0.062em 0em rgba(254, 255, 239, 0.61) inset, 0em -0.062em 0.062em 0em #a1872a inset;
+      filter: drop-shadow(0.062em 0.125em 0.125em rgba(0, 0, 0, 0.25)) drop-shadow(0em 0.062em 0.125em rgba(0, 0, 0, 0.25));
+      overflow: hidden;
+      transition: var(--transition);
+    }
+
+    .About-Me__moon {
+      transform: translateX(100%);
+      width: 100%;
+      height: 100%;
+      background-color: var(--moon-bg);
+      border-radius: inherit;
+      box-shadow: 0.062em 0.062em 0.062em 0em rgba(254, 255, 239, 0.61) inset, 0em -0.062em 0.062em 0em #969696 inset;
+      transition: var(--transition);
+      position: relative;
+    }
+
+    .About-Me__spot {
+      position: absolute;
+      top: 30em;
+      left: 0.312em;
+      width: 0.75em;
+      height: 0.75em;
+      border-radius: var(--container-radius);
+      background-color: var(--spot-color);
+      box-shadow: 0em 0.0312em 0.062em rgba(0, 0, 0, 0.25) inset;
+    }
+
+    .About-Me__spot:nth-of-type(2) {
+      width: 0.375em;
+      height: 0.375em;
+      top: 0.937em;
+      left: 1.375em;
+    }
+
+    .About-Me__spot:nth-last-of-type(3) {
+      width: 0.25em;
+      height: 0.25em;
+      top: 0.312em;
+      left: 0.812em;
+    }
+
+    .About-Me__clouds {
+      width: 1.25em;
+      height: 1.25em;
+      background-color: var(--clouds-color);
+      border-radius: var(--container-radius);
+      position: absolute;
+      bottom: -0.625em;
+      left: 0.312em;
+      box-shadow: 0.937em 0.312em var(--clouds-color), -0.312em -0.312em var(--back-clouds-color), 1.437em 0.375em var(--clouds-color), 0.5em -0.125em var(--back-clouds-color), 2.187em 0 var(--clouds-color), 1.25em -0.062em var(--back-clouds-color), 2.937em 0.312em var(--clouds-color), 2em -0.312em var(--back-clouds-color), 3.625em -0.062em var(--clouds-color), 2.625em 0em var(--back-clouds-color), 4.5em -0.312em var(--clouds-color), 3.375em -0.437em var(--back-clouds-color), 4.625em -1.75em 0 0.437em var(--clouds-color), 4em -0.625em var(--back-clouds-color), 4.125em -2.125em 0 0.437em var(--back-clouds-color);
+      transition: 0.5s cubic-bezier(0, -0.02, 0.4, 1.25);
+    }
+
+    .About-Me__stars-container {
+      position: absolute;
+      color: var(--stars-color);
+      top: -100%;
+      left: 0.312em;
+      width: 2.75em;
+      height: auto;
+      transition: var(--transition);
+    }
+
+    /* actions */
+
+    .About-Me__checkbox:checked + .About-Me__container {
+      background-color: var(--container-night-bg);
+    }
+
+    .About-Me__checkbox:checked + .About-Me__container .About-Me__circle-container {
+      left: calc(100% - var(--circle-container-offset) - var(--circle-container-diameter));
+    }
+
+    .About-Me__checkbox:checked + .About-Me__container .About-Me__circle-container:hover {
+      left: calc(100% - var(--circle-container-offset) - var(--circle-container-diameter) - 0.187em)
+    }
+
+    .About-Me__circle-container:hover {
+      left: calc(var(--circle-container-offset) + 0.187em);
+    }
+
+    .About-Me__checkbox:checked + .About-Me__container .About-Me__moon {
+      transform: translate(0);
+    }
+
+    .About-Me__checkbox:checked + .About-Me__container .About-Me__clouds {
+      bottom: -4.062em;
+    }
+
+    .About-Me__checkbox:checked + .About-Me__container .About-Me__stars-container {
+      top: 50%;
+      transform: translateY(-50%);
+    }
+  </style>
+</head>
+<body>
+  <label class="About-Me">
+    <input class="About-Me__checkbox" type="checkbox">
+    <div class="About-Me__container">
+      <div class="About-Me__circle-container">
+        <div class="About-Me__sun-moon-container">
+          <div class="About-Me__moon">
+            <div class="About-Me__spot"></div>
+            <div class="About-Me__spot"></div>
+            <div class="About-Me__spot"></div>
+          </div>
+        </div>
+      </div>
+      <div class="About-Me__clouds"></div>
+      <div class="About-Me__stars-container">
+        <svg fill="currentColor" viewBox="0 0 75 40">
+          <polygon points="38.57,24.8 38.57,24.8 35.1,24.8 36.84,22.7 35.77,19.3 38.57,21 41.37,19.3 40.31,22.7 42.05,24.8"/>
+          <polygon points="28.35,18.96 28.35,18.96 27.22,18.96 27.84,18.2 27.46,17.04 28.35,17.58 29.24,17.04 28.85,18.2 29.47,18.96"/>
+          <polygon points="48.35,11.96 48.35,11.96 47.22,11.96 47.84,11.2 47.46,10.04 48.35,10.58 49.24,10.04 48.85,11.2 49.47,11.96"/>
+          <polygon points="56.35,21.96 56.35,21.96 55.22,21.96 55.84,21.2 55.46,20.04 56.35,20.58 57.24,20.04 56.85,21.2 57.47,21.96"/>
+          <polygon points="16.35,21.96 16.35,21.96 15.22,21.96 15.84,21.2 15.46,20.04 16.35,20.58 17.24,20.04 16.85,21.2 17.47,21.96"/>
+          <polygon points="64.35,5.96 64.35,5.96 63.22,5.96 63.84,5.2 63.46,4.04 64.35,4.58 65.24,4.04 64.85,5.2 65.47,5.96"/>
+          <polygon points="8.35,5.96 8.35,5.96 7.22,5.96 7.84,5.2 7.46,4.04 8.35,4.58 9.24,4.04 8.85,5.2 9.47,5.96"/>
+        </svg>
+      </div>
+    </div>
+  </label>
+</body>
+</html>
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    .wrapper {
+      --font-color-dark: #323232;
+      --font-color-light: #FFF;
+      --bg-color: #fff;
+      --main-color: #323232;
+      position: relative;
+      width: 900px;
+      height: 50px;
+      background-color: var(--bg-color);
+      border: 2px solid var(--main-color);
+      border-radius: 34px;
+      display: flex;
+      flex-direction: row;
+      box-shadow: 4px 4px var(--main-color);
+      margin: 0 auto; /* Center horizontally */
+    }
+
+    .option {
+      flex: 1;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      position: relative;
+      height: 100%;
+    }
+
+    .input {
+      width: 100%;
+      height: 100%;
+      position: absolute;
+      left: 0;
+      top: 0;
+      appearance: none;
+      cursor: pointer;
+    }
+
+    .btn {
+      width: 100%;
+      height: 100%;
+      background-color: var(--bg-color);
+      border-radius: 50px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .span {
+      color: var(--font-color-dark);
+      font-size: 16px; /* Adjust font size as needed */
+    }
+
+    .input:checked + .btn {
+      background-color: var(--main-color);
+    }
+
+    .input:checked + .btn .span {
+      color: var(--font-color-light);
+    }
+  </style>
+</head>
+<body>
+  <div class="wrapper">
+    <div class="option">
+      <input class="input" type="radio" name="btn" value="option1" checked="">
+      <div class="btn">
+        <span class="span">About Me</span>
+      </div>
+    </div>
+    <div class="option">
+      <input class="input" type="radio" name="btn" value="option2">
+      <div class="btn">
+        <span class="span">Experience</span>
+      </div>
+    </div>
+    <div class="option">
+      <input class="input" type="radio" name="btn" value="option3">
+      <div class="btn">
+        <span class="span">Portfolio</span>
+      </div>  
+    </div>
+    <div class="option" onclick="window.location.href='Aditya-CV.html'">
+      <input class="input" type="radio" name="btn" value="option4">
+      <div class="btn">
+        <span class="span">Home</span>
+      </div>  
+    </div>
+  </div>
+</body>
+</html>
+
+
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About Me Photo</title>
+    <style>
+        .photo-container {
+            text-align: center;
+            margin: 20px;
+        }
+        .about-me-photo {
+            width: 100%;
+            height: auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="photo-container">
+        <img src="about_me.jpg" alt="About Me Photo" class="about-me-photo">
+    </div>
+</body>
+</html>
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Carrossel 3D - @programador.cs</title>
+    <style>
+        @import url("https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,700;1,700&display=swap");
+
+        body {
+            font-family: "Nunito", cursive;
+            color: #efefef;
+            text-align: center;
+            padding: 4em 0;
+            background-color: #8787e0;
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            align-items: center;
+            background-color: #f8f9f5;
+        }
+
+        .conteudo__superior {
+            flex: 1;
+        }
+
+        .container {
+            display: flex;
+            justify-content: center;
+            align-items: flex-end; /* Align carousel to the bottom */
+            flex-grow: 1; /* Allow content to expand */
+        }
+
+        .container-carrossel {
+            --widthItem: 200px;
+            --heightItem: 300px;
+            width: var(--widthItem);
+            height: var(--heightItem);
+            perspective: 1000px;
+        }
+
+        .carrossel {
+            --rotatey: 0;
+            font-size: 4rem;
+            position: relative;
+            transform: rotateY(var(--rotatey));
+            transform-style: preserve-3d;
+            user-select: none;
+            cursor: grab;
+        }
+
+        .carrossel-item {
+            opacity: 0.5;
+            position: absolute;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border-radius: 5px;
+            transition: opacity 0.5s;
+        }
+
+        .carrossel-item:hover {
+            opacity: 1;
+        }
+
+        .carrossel,
+        .carrossel-item {
+            width: 100%;
+            height: 100%;
+        }
+
+        .carrossel-item:nth-child(1) {
+    --rotatey: 0;
+    transform: rotatey(var(--rotatey)) translatez(var(--tz));
+    background: linear-gradient(-229deg, #fbd52d, #ef3a7b);
+    background-image: url( 'scrool1.jpg'); /* Update the path as needed */
+    background-size: cover; /* Ensure the image covers the entire element */
+    background-position: center; /* Center the image */
+}
+
+        .carrossel-item:nth-child(2) {
+            --rotatey: 0;
+            transform: rotateY(var(--rotatey)) translateZ(var(--tz));
+            background: linear-gradient(-229deg, #ff70af, #5fa8f5);
+            background-image: url('adi1.jpg'); /* Update the path as needed */
+    background-size: cover; /* Ensure the image covers the entire element */
+    background-position: center; /* Center the image */
+        }
+
+        .carrossel-item:nth-child(3) {
+            --rotatey: 0;
+            transform: rotateY(var(--rotatey)) translateZ(var(--tz));
+            background: linear-gradient(-229deg, #0cebeb, #29ffc6);
+            background-image: url('adi1.jpg'); /* Update the path as needed */
+    background-size: cover; /* Ensure the image covers the entire element */
+    background-position: center; /* Center the image */
+        }
+
+        .carrossel-item:nth-child(4) {
+            --rotatey: 0;
+            transform: rotateY(var(--rotatey)) translateZ(var(--tz));
+            background: linear-gradient(-229deg, #88f7f9, #048fff);
+            background-image: url('adi1.jpg'); /* Update the path as needed */
+    background-size: cover; /* Ensure the image covers the entire element */
+    background-position: center; /* Center the image */
+        }
+
+        .carrossel-item:nth-child(5) {
+            --rotate: 0;
+            transform: rotateY(var(--rotatey)) translateZ(var(--tz));
+            background: linear-gradient(-229deg, #0093e9, #80d0c7);
+            background-image: url('adi1.jpg'); /* Update the path as needed */
+    background-size: cover; /* Ensure the image covers the entire element */
+    background-position: center; /* Center the image */
+        }
+
+        .carrossel-item:nth-child(6) {
+            --rotatey: 0;
+            transform: rotateY(var(--rotatey)) translateZ(var(--tz));
+            background: linear-gradient(-229deg, #cf91ff, #5782f5);
+            background-image: url('adi1.jpg'); /* Update the path as needed */
+    background-size: cover; /* Ensure the image covers the entire element */
+    background-position: center; /* Center the image */
+        }
+
+        @media screen and (min-width: 576px) {
+            .container-carrossel {
+                --widthItem: 500px;
+                --heightItem: 400px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="conteudo__superior">
+        <!-- Your columns and content above the carousel go here -->
+    </div>
+    <div class="container">
+        <div class="container-carrossel">
+            <div class="carrossel">
+                <div class="carrossel-item"></div>
+                <div class="carrossel-item"></div>
+                <div class="carrossel-item"></div>
+                <div class="carrossel-item"></div>
+                <div class="carrossel-item"></div>
+                <div class="carrossel-item"></div>
+            </div>
+        </div>
+    </div>
+    <script>
+        const container = document.querySelector(".container");
+        const containercarrossel = container.querySelector(".container-carrossel");
+        const carrossel = container.querySelector(".carrossel");
+        const carrosselItems = carrossel.querySelectorAll(".carrossel-item");
+
+        let isMouseDown = false;
+        let currentMousePos = 0;
+        let lastMousePos = 0;
+        let lastMoveTo = 0;
+        let moveTo = 0;
+
+        const createcarrossel = () => {
+            const carrosselProps = onResize();
+            const length = carrosselItems.length;
+            const degrees = 360 / length;
+            const gap = 20;
+            const tz = distanceZ(carrosselProps.w, length, gap);
+
+            const fov = calculateFov(carrosselProps);
+            const height = calculateHeight(tz);
+
+            container.style.width = tz * 2 + gap * length + "px";
+            container.style.height = height + "px";
+
+            carrosselItems.forEach((item, i) => {
+                const degreesByItem = degrees * i + "deg";
+                item.style.setProperty("--rotatey", degreesByItem);
+                item.style.setProperty("--tz", tz + "px");
+            });
+        };
+
+        const lerp = (a, b, n) => {
+            return n * (a - b) + b;
+        };
+
+        const distanceZ = (widthElement, length, gap) => {
+            return widthElement / 2 / Math.tan(Math.PI / length) + gap;
+        };
+
+        const calculateHeight = (z) => {
+            const t = Math.atan((90 * Math.PI) / 180 / 2);
+            const height = t * 2 * z;
+            return height;
+        };
+
+        const calculateFov = (carrosselProps) => {
+            const perspective = window.getComputedStyle(containercarrossel).perspective.split("px")[0];
+            const length = Math.sqrt(carrosselProps.w * carrosselProps.w) + Math.sqrt(carrosselProps.h * carrosselProps.h);
+            const fov = 2 * Math.atan(length / (2 * perspective)) * (180 / Math.PI);
+            return fov;
+        };
+
+        const getPosX = (x) => {
+            currentMousePos = x;
+            moveTo = currentMousePos < lastMousePos ? moveTo - 2 : moveTo + 2;
+            lastMousePos = currentMousePos;
+        };
+
+        const update = () => {
+            lastMoveTo = lerp(moveTo, lastMoveTo, 0.05);
+            carrossel.style.setProperty("--rotatey", lastMoveTo + "deg");
+            requestAnimationFrame(update);
+        };
+
+        const onResize = () => {
+            const boundingcarrossel = containercarrossel.getBoundingClientRect();
+            const carrosselProps = {
+                w: boundingcarrossel.width,
+                h: boundingcarrossel.height,
+            };
+            return carrosselProps;
+        };
+
+        const initEvents = () => {
+            carrossel.addEventListener("mousedown", () => {
+                isMouseDown = true;
+                carrossel.style.cursor = "grabbing";
+            });
+            carrossel.addEventListener("mouseup", () => {
+                isMouseDown = false;
+                carrossel.style.cursor = "grab";
+            });
+            container.addEventListener("mouseleave", () => (isMouseDown = false));
+            carrossel.addEventListener("mousemove", (e) => isMouseDown && getPosX(e.clientX));
+            carrossel.addEventListener("touchstart", () => {
+                isMouseDown = true;
+                carrossel.style.cursor = "grabbing";
+            });
+            carrossel.addEventListener("touchend", () => {
+                isMouseDown = false;
+                carrossel.style.cursor = "grab";
+            });
+            container.addEventListener("touchmove", (e) => isMouseDown && getPosX(e.touches[0].clientX));
+            window.addEventListener("resize", createcarrossel);
+            update();
+            createcarrossel();
+        };
+
+        initEvents();
+    </script>
+</body>
+
+</html>
+
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portfolio Website</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        /* General styles for the entire website */
+        .full-size-image {
+            width: 100%;
+            height: auto;
+        }
+
+        .section {
+            padding: 100px;
+        }
+
+        /* Styles specific to the About Me section */
+        .about-me-section {
+            text-align: center;
+            background-color: #f0f0f0;
+            padding: 50px 20px;
+        }
+
+        .about-me-section h1 {
+            margin-bottom: 20px;
+            font-size: 2.5em;
+        }
+
+        .about-box {
+            background-color: rgba(0, 0, 255, 0.6); /* Blue background with transparency */
+            border: 5px solid white; /* Thick white outline */
+            padding: 20px;
+            max-width: 1000px;
+            margin: 0 auto;
+            border-radius: 30px;
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px); /* Blur effect */
+            color: white;
+        }
+
+        .about-box p {
+            font-size: 1.2em;
+            line-height: 1.6;
+        }
+    </style>
+</head>
+<body>
+   
+    <!-- About Me Section -->
+    <section class="about-me-section">
+        <p> </p>
+<p> </p>
+<p> </p>
+<p> </p>
+        <div class="about-box">
+<h1>About Me</h1>
+            <p>
+                Hi, I'm [Your Name], a passionate student pursuing a Bachelor of Business Administration with a focus on Business Analytics. 
+                I have a strong academic foundation and a keen interest in finance and analytics. 
+                I enjoy challenging situations that enhance my skills and push me to grow in the best possible ways. 
+                With my knowledge in business and analytics, I aim to bring data-driven solutions to complex problems. 
+                Welcome to my portfolio website where you can learn more about my projects, experience, and skills.
+            </p>
+        </div>
+    </section>
+
+    <!-- Additional sections can go here -->
+</body>
+</html>
